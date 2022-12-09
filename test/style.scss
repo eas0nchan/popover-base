@@ -1,0 +1,43 @@
+html,
+body {
+  overflow: auto;
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+#app {
+  padding: 20px;
+  height: 100%;
+  padding-top: 200px;
+  height: 2000px;
+  box-sizing: border-box;
+}
+
+.btn {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 2px;
+  color: #fff;
+  background-color: #409eff;
+  cursor: pointer;
+  transition: opacity 0.25s ease;
+
+  &:hover {
+    opacity: 0.8;
+  }
+}
+
+.fade-in-scale-up-enter-active {
+  transition: opacity 0.25s cubic-bezier(0, 0, 0.2, 1), transform 0.25s cubic-bezier(0, 0, 0.2, 1);
+}
+
+.fade-in-scale-up-leave-active {
+  transition: opacity 0.25s cubic-bezier(0.4, 0, 1, 1), transform 0.25s cubic-bezier(0.4, 0, 1, 1);
+}
+
+.fade-in-scale-up-enter,
+.fade-in-scale-up-leave-to {
+  opacity: 0;
+  transform: scale(0.5);
+}
