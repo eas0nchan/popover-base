@@ -89,6 +89,8 @@ export function useFloatingUi({
   function _autoUpdate() {
     if (isHTMLElement(triggerRef.value) && isHTMLElement(bodyRef.value)) {
       _cleanup = autoUpdate(triggerRef.value, bodyRef.value, update)
+    } else if (virtualTriggerRef.value && isElement(bodyRef.value)) {
+      update()
     }
   }
   function cleanup() {

@@ -18,22 +18,22 @@ export function useTrigger({ triggerRef, triggerNameRef, showRef, showDelayRef, 
     }
   }
 
-  watch(triggerRef, trigger => {
+  watch([triggerRef, triggerNameRef], ([trigger, triggerName]) => {
     offList.forEach(off => off())
-    if (!isHTMLElement(trigger)) return (offList = [])
-    offList = [
-      on(trigger, 'mouseenter', handleMouseEnter),
-      on(trigger, 'mouseleave', handleMouseLeave),
-      on(trigger, 'click', () => {
-        if (triggerNameRef.value === 'click') showRef.value = !showRef.value
-      }),
-      on(trigger, 'focus', () => {
-        if (triggerNameRef.value === 'focus') showRef.value = true
-      }),
-      on(trigger, 'blur', () => {
-        if (triggerNameRef.value === 'focus') showRef.value = false
-      })
-    ]
+    if (!isHTMLElement(trigger) || triggerName === 'manual') return (offList = [])
+    if (triggerName === 'hover') {
+      offList = [
+        on(trigger, 'mouseenter', handleMouseEnter),
+        on(trigger, 'mouseleave', handleMouseLeave)
+      ]
+    } else if (triggerName === 'click') {
+      offList = [on(trigger, 'click', () => (showRef.value = !showRef.value))]
+    } else if (triggerName === 'focus') {
+      offList = [
+        on(trigger, 'focus', () => (showRef.value = true)),
+        on(trigger, 'blur', () => (showRef.value = false))
+      ]
+    }
   })
 
   onUnmounted(() => {

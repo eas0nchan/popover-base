@@ -1,5 +1,9 @@
-import { baseZIndex } from './manager'
-import { isString, isHTMLElement, isNil, placementValidator } from '../_utils'
+import { isString, isHTMLElement, placementValidator } from '../_utils'
+
+export let visibleCount = 0
+export function setVisibleCount(setter) {
+  visibleCount = setter(visibleCount)
+}
 
 export const popoverBaseProps = {
   show: {
@@ -14,7 +18,7 @@ export const popoverBaseProps = {
   },
   placement: {
     validator: placementValidator,
-    default: 'bottom'
+    default: 'top'
   },
   disabled: {
     type: Boolean,
@@ -38,18 +42,22 @@ export const popoverBaseProps = {
   },
   zIndex: {
     type: Number,
-    default: baseZIndex
+    default: 2000
   },
   to: {
-    validator: val => isString(val) || isHTMLElement(val) || isNil(val),
+    validator: val => isString(val) || isHTMLElement(val) || val === false,
     default: 'body'
   },
   transitionName: {
     type: String,
-    default: 'vf-popover-base-transition'
+    default: 'v-popover-base-transition'
   },
   clickOutsideEvent: {
     validator: val => ['click', 'mousedown'].includes(val),
     default: 'click'
+  },
+  backgroundColor: {
+    type: String,
+    default: '#fff'
   }
 }

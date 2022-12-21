@@ -1,10 +1,8 @@
-import { setBaseZIndex } from './popover/manager'
-import VfPopoverBase from './popover/PopoverBase.vue'
+import PopoverBase from './popover/PopoverBase.vue'
+import { popoverBaseProps } from './popover/config'
 
-export { VfPopoverBase }
+PopoverBase.install = Vue => Vue.component(PopoverBase.name, PopoverBase)
 
-export default (Vue, { zIndex = 2000 } = {}) => {
-  setBaseZIndex(zIndex)
-  Vue.component('VfPopoverBase', VfPopoverBase)
-}
- 
+export { PopoverBase, popoverBaseProps }
+
+export default PopoverBase

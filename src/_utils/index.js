@@ -6,6 +6,10 @@ export function isString(val) {
   return typeof val === 'string'
 }
 
+export function isObject(val) {
+  return typeof val === 'object' && !isNull(val)
+}
+
 export function isHTMLElement(val) {
   return val instanceof HTMLElement
 }

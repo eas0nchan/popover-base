@@ -1,14 +1,20 @@
+<script>
+export default {
+  name: 'PopoverBase',
+  inheritAttrs: false
+}
+</script>
+
 <script setup>
 import { ref, toRef, reactive, computed, watch, nextTick } from 'vue'
 import Teleport from 'vue2-teleport-component'
-import { popoverBaseProps } from './props'
 import { useFloatingUi, useIsMounted, useEventListener, useTrigger } from '../_hooks'
-import { visibleCount, setVisibleCount } from './manager'
+import { popoverBaseProps, visibleCount, setVisibleCount } from './config'
 import { isNil, querySelector, transformOriginMap, createPointTrigger } from '../_utils'
 
 const props = defineProps(popoverBaseProps)
 
-const emit = defineEmits(['click-outside'])
+const emit = defineEmits(['click-outside', 'after-show', 'after-hide'])
 
 const isMounted = useIsMounted()
 
@@ -38,6 +44,7 @@ const bodyStyle = reactive({
   left: '',
   top: '',
   zIndex: computed(() => (visible.value ? props.zIndex + visibleCount - 1 : props.zIndex)),
+  backgroundColor: computed(() => props.backgroundColor),
   transformOrigin: computed(() => transformOriginMap[_placement.value])
 })
 
@@ -60,8 +67,18 @@ const { update, autoUpdate, cleanup } = useFloatingUi({
   appliedPlacementRef: _placement
 })
 
+watch(virtualTriggerRef, val => val && visible.value && update())
+
 function handleBeforeEnter() {
-  nextTick(update)
+  nextTick(autoUpdate)
+}
+function handleAfterEnter() {
+  emit('after-show')
+}
+function handleAfterLeave() {
+  cleanup()
+  Object.assign(bodyStyle, { left: '', top: '' })
+  emit('after-hide')
 }
 
 useEventListener(
@@ -90,36 +107,29 @@ function setVisible(val) {
 defineExpose({ setVisible, updatePosition: update })
 </script>
 
-<script>
-export default {
-  name: 'PopoverBase',
-  inheritAttrs: false
-}
-</script>
-
 <template>
-  <div ref="wrapRef" class="vf-popover-base__wrap">
+  <div ref="wrapRef" class="v-popover-base__wrap">
     <slot name="trigger"></slot>
     <Teleport :to="_to">
       <Transition
         :name="transitionName"
         @before-enter="handleBeforeEnter"
-        @after-enter="autoUpdate"
-        @after-leave="cleanup"
+        @after-enter="handleAfterEnter"
+        @after-leave="handleAfterLeave"
       >
         <div
-          v-if="visible"
+          v-if="visible && $scopedSlots.default"
           ref="bodyRef"
-          class="vf-popover-base__body"
+          class="v-popover-base__body"
           :style="bodyStyle"
           @mouseenter="handleMouseEnter"
           @mouseleave="handleMouseLeave"
         >
-          <div class="vf-popover-base__content"><slot :trigger-width="triggerWidth"></slot></div>
+          <div class="v-popover-base__content"><slot :trigger-width="triggerWidth"></slot></div>
           <div
             v-if="arrow && $scopedSlots.default"
             ref="arrowRef"
-            class="vf-popover-base__arrow"
+            class="v-popover-base__arrow"
             :style="arrowStyle"
           ></div>
         </div>
@@ -129,25 +139,25 @@ export default {
 </template>
 
 <style lang="scss">
-.vf-popover-base-transition-enter-active {
+.v-popover-base-transition-enter-active {
   transition: opacity 0.15s cubic-bezier(0, 0, 0.2, 1), transform 0.15s cubic-bezier(0, 0, 0.2, 1);
 }
 
-.vf-popover-base-transition-leave-active {
+.v-popover-base-transition-leave-active {
   transition: opacity 0.15s cubic-bezier(0.4, 0, 1, 1), transform 0.15s cubic-bezier(0.4, 0, 1, 1);
 }
 
-.vf-popover-base-transition-enter,
-.vf-popover-base-transition-leave-to {
+.v-popover-base-transition-enter,
+.v-popover-base-transition-leave-to {
   opacity: 0;
   transform: scale(0.85);
 }
 
-.vf-popover-base__wrap {
+.v-popover-base__wrap {
   display: inline-block;
 }
 
-.vf-popover-base__body {
+.v-popover-base__body {
   position: absolute;
   border-radius: 2px;
   background-color: #fff;
@@ -155,12 +165,12 @@ export default {
     0 9px 28px 8px rgba(0, 0, 0, 0.05);
 }
 
-.vf-popover-base__content {
+.v-popover-base__content {
   border-radius: inherit;
   background-color: inherit;
 }
 
-.vf-popover-base__arrow {
+.v-popover-base__arrow {
   position: absolute;
   z-index: -1;
   width: 8px;
