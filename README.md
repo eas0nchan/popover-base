@@ -3,7 +3,7 @@ A basic popover component for vue2(>=2.7).
 
 # Installation
 ```
-npm i @eas0nchan/popover-base
+npm i popover-base
 ```
 
 # Usage
